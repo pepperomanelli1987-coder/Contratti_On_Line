@@ -2,52 +2,205 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Generatore Contratti Lampade</title>
+    <title>Contratti Lampade Votive</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f3f4f6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            max-height: 90px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #1f2933;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        .section-title {
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #374151;
+            border-left: 4px solid #2563eb;
+            padding-left: 8px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 8px 10px;
+            margin-top: 4px;
+            border-radius: 6px;
+            border: 1px solid #d1d5db;
+            font-size: 0.9rem;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .btn-primary {
+            margin-top: 25px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #2563eb;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-secondary {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #6b7280;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+
+        .alert-success {
+            margin-bottom: 15px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #ecfdf3;
+            color: #166534;
+            font-size: 0.9rem;
+            border: 1px solid #bbf7d0;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Genera Contratto Lampade</h1>
+    <div class="container">
 
-    <form action="/genera" method="POST">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='Senza titolo.jpg') }}" alt="M&G Servizi srls">
+        </div>
 
-        <label>Nome completo:</label><br>
-        <input type="text" name="nome_completo" required><br><br>
+        <h1>Contratto Lampade Votive</h1>
+        <div class="subtitle">
+            Generazione automatica del contratto in formato DOCX secondo il modello ufficiale.
+        </div>
 
-        <label>Luogo di nascita:</label><br>
-        <input type="text" name="luogo_nascita" required><br><br>
+        {% if success %}
+        <div class="alert-success">
+            Contratto generato con successo.
+            {% if id_generato %}
+                ID contratto: <strong>{{ id_generato }}</strong>
+            {% endif %}
+        </div>
+        {% endif %}
 
-        <label>Data di nascita:</label><br>
-        <input type="text" name="data_nascita" placeholder="gg/mm/aaaa" required><br><br>
+        <form action="/genera" method="POST">
 
-        <label>Codice Fiscale:</label><br>
-        <input type="text" name="cf" required><br><br>
+            <div class="section-title">Dati del richiedente</div>
 
-        <label>Comune di residenza:</label><br>
-        <input type="text" name="comune_residenza" required><br><br>
+            <label>Nome completo:</label>
+            <input type="text" name="nome_completo" required>
 
-        <label>Via:</label><br>
-        <input type="text" name="via" required><br><br>
+            <label>Luogo di nascita:</label>
+            <input type="text" name="luogo_nascita" required>
 
-        <label>Telefono:</label><br>
-        <input type="text" name="telefono"><br><br>
+            <label>Data di nascita:</label>
+            <input type="text" name="data_nascita" placeholder="gg/mm/aaaa" required>
 
-        <label>Email:</label><br>
-        <input type="email" name="email"><br><br>
+            <label>Codice Fiscale:</label>
+            <input type="text" name="cf" required>
 
-        <label>Metodo di pagamento:</label><br>
-        <select name="metodo_pagamento" required>
-            <option value="Contanti">Contanti</option>
-            <option value="Carta">Carta</option>
-            <option value="Bonifico">Bonifico</option>
-            <option value="PagoPA">PagoPA</option>
-        </select><br><br>
+            <label>Comune di residenza:</label>
+            <input type="text" name="comune_residenza" required>
 
-        <label>Numero lampade:</label><br>
-        <input type="number" name="num_lampade" required><br><br>
+            <label>Via:</label>
+            <input type="text" name="via" required>
 
-        <label>Elenco defunti:</label><br>
-        <textarea name="elenco_defunti"></textarea><br><br>
+            <label>Telefono:</label>
+            <input type="text" name="telefono">
 
-        <button type="submit">Genera Contratto</button>
-    </form>
+            <label>Email:</label>
+            <input type="email" name="email">
+
+            <div class="section-title">Dati del contratto</div>
+
+            <label>Metodo di pagamento:</label>
+            <select name="metodo_pagamento" required>
+                <option value="Contanti">Contanti</option>
+                <option value="Carta">Carta</option>
+                <option value="Bonifico">Bonifico</option>
+                <option value="PagoPA">PagoPA</option>
+            </select>
+
+            <label>Numero lampade:</label>
+            <input type="number" name="num_lampade" required>
+
+            <div class="section-title">Elenco defunti</div>
+
+            <label>Nome e Cognome del/lla defunto/a:</label>
+            <textarea name="elenco_defunti"></textarea>
+
+            <!-- Pulsante genera -->
+            <button type="submit" class="btn-primary">Genera contratto</button>
+
+            <!-- Pulsante pulisci -->
+            <button type="button"
+                    class="btn-secondary"
+                    onclick="document.querySelector('form').reset();">
+                Pulisci campi
+            </button>
+
+        </form>
+    </div>
 </body>
 </html>

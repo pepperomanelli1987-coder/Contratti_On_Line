@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Generatore Contratti Lampade</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        textarea {
+            height: 80px;
+        }
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 12px;
+            background: #0078ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #005fcc;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Generatore Contratti Lampade</h2>
+
+    <form action="/genera" method="POST">
+
+        <label>Nome completo</label>
+        <input type="text" name="nome_completo" required>
+
+        <label>Luogo di nascita</label>
+        <input type="text" name="luogo_nascita" required>
+
+        <label>Data di nascita</label>
+        <input type="text" name="data_nascita" placeholder="gg/mm/aaaa" required>
+
+        <label>Codice Fiscale</label>
+        <input type="text" name="cf" required>
+
+        <label>Comune di residenza</label>
+        <input type="text" name="comune_residenza" required>
+
+        <label>Via</label>
+        <input type="text" name="via" required>
+
+        <label>Telefono</label>
+        <input type="text" name="telefono">
+
+        <label>Email</label>
+        <input type="email" name="email">
+
+        <label>Metodo di pagamento</label>
+        <select name="metodo_pagamento" required>
+            <option value="Contanti">Contanti</option>
+            <option value="Carta">Carta</option>
+            <option value="Bonifico">Bonifico</option>
+            <option value="PagoPA">PagoPA</option>
+        </select>
+
+        <label>Numero lampade</label>
+        <input type="number" name="num_lampade" required>
+
+        <label>Elenco defunti</label>
+        <textarea name="elenco_defunti"></textarea>
+
+        <button type="submit">Genera Contratto</button>
+    </form>
+</div>
+
+</body>
+</html>

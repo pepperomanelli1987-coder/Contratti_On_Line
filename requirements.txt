@@ -1,3 +1,4 @@
 Flask
 python-docx
 gunicorn
+psycopg2-binary

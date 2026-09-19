@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Generatore Contratti Lampade</title>
+</head>
+<body>
+    <h1>Genera Contratto Lampade</h1>
+
+    <form action="/genera" method="POST">
+        <label>Nome cliente:</label><br>
+        <input type="text" name="nome" required><br><br>
+
+        <label>Indirizzo:</label><br>
+        <input type="text" name="indirizzo" required><br><br>
+
+        <label>Numero lampade:</label><br>
+        <input type="number" name="lampade" required><br><br>
+
+        <label>Note:</label><br>
+        <textarea name="note"></textarea><br><br>
+
+        <button type="submit">Genera Contratto</button>
+    </form>
+</body>
+</html>

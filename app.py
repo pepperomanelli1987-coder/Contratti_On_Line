@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_file
+from flask import Flask, render_template, request, send_file, redirect, url_for
 import sqlite3
 import os
 from datetime import datetime
@@ -14,13 +14,15 @@ OUTPUT_DIR = "contratti_generati"
 if not os.path.exists(OUTPUT_DIR):
     os.makedirs(OUTPUT_DIR)
 
-# Creazione automatica del database
+# Creazione database + tabella config
 def init_db():
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+
     c.execute("""
         CREATE TABLE IF NOT EXISTS contratti (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_contratto INTEGER,
             nome_completo TEXT,
             luogo_nascita TEXT,
             data_nascita TEXT,
@@ -36,6 +38,20 @@ def init_db():
             file_path TEXT
         )
     """)
+
+    c.execute("""
+        CREATE TABLE IF NOT EXISTS config (
+            chiave TEXT PRIMARY KEY,
+            valore INTEGER
+        )
+    """)
+
+    # Se non esiste ultimo_id, lo inizializziamo a 235
+    c.execute("SELECT valore FROM config WHERE chiave='ultimo_id'")
+    row = c.fetchone()
+    if row is None:
+        c.execute("INSERT INTO config (chiave, valore) VALUES ('ultimo_id', 235)")
+
     conn.commit()
     conn.close()
 
@@ -43,7 +59,9 @@ init_db()
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    success = request.args.get("success")
+    id_generato = request.args.get("id")
+    return render_template("index.html", success=success, id_generato=id_generato)
 
 @app.route("/genera", methods=["POST"])
 def genera():
@@ -63,34 +81,41 @@ def genera():
     # Data automatica
     data_contratto = datetime.now().strftime("%d/%m/%Y")
 
-    # Inserimento nel DB
+    # Recupero numerazione
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+
+    c.execute("SELECT valore FROM config WHERE chiave='ultimo_id'")
+    ultimo_id = c.fetchone()[0]
+
+    id_contratto = ultimo_id + 1
+
+    # Aggiorna numerazione
+    c.execute("UPDATE config SET valore=? WHERE chiave='ultimo_id'", (id_contratto,))
+
+    # Inserimento nel DB
     c.execute("""
         INSERT INTO contratti (
-            nome_completo, luogo_nascita, data_nascita, cf,
+            id_contratto, nome_completo, luogo_nascita, data_nascita, cf,
             comune_residenza, via, telefono, email,
             metodo_pagamento, num_lampade, elenco_defunti,
             data_contratto, file_path
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        nome_completo, luogo_nascita, data_nascita, cf,
+        id_contratto, nome_completo, luogo_nascita, data_nascita, cf,
         comune_residenza, via, telefono, email,
         metodo_pagamento, num_lampade, elenco_defunti,
         data_contratto, ""
     ))
+
     conn.commit()
-
-    # ID contratto generato
-    contratto_id = c.lastrowid
-
     conn.close()
 
     # Compilazione DOCX
     doc = Document(MODELLO_PATH)
 
     segnaposto = {
-        "{{ID_CONTRATTO}}": str(contratto_id),
+        "{{ID_CONTRATTO}}": str(id_contratto),
         "{{NOME_COMPLETO}}": nome_completo,
         "{{LUOGO_NASCITA}}": luogo_nascita,
         "{{DATA_NASCITA}}": data_nascita,
@@ -111,13 +136,13 @@ def genera():
                 p.text = p.text.replace(key, value)
 
     # Salvataggio file
-    output_path = f"{OUTPUT_DIR}/contratto_{contratto_id}.docx"
+    output_path = f"{OUTPUT_DIR}/contratto_{id_contratto}.docx"
     doc.save(output_path)
 
     # Aggiorna DB con percorso file
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("UPDATE contratti SET file_path = ? WHERE id = ?", (output_path, contratto_id))
+    c.execute("UPDATE contratti SET file_path = ? WHERE id_contratto = ?", (output_path, id_contratto))
     conn.commit()
     conn.close()
 

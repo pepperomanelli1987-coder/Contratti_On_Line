@@ -1,4 +1,2 @@
-Flask
-python-docx
-gunicorn
-psycopg2-binary
+Flask==2.3.2
+gunicorn==21.2.0

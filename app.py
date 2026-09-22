@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, session, send_file
 import sqlite3
 import os
 from docx import Document
+from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = "supersegreto123"  # Cambiala se vuoi
@@ -70,6 +71,8 @@ def genera():
     num_lampade = request.form["num_lampade"]
     elenco_defunti = request.form["elenco_defunti"]
 
+    data_contratto = datetime.now().strftime("%d/%m/%Y")
+
     # Connessione DB
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
@@ -97,19 +100,21 @@ def genera():
     # Carica modello
     doc = Document(MODELLO)
 
-    # Sostituzioni nel modello
+    # Sostituzioni nel modello (MAIUSCOLO come nel DOCX)
     for p in doc.paragraphs:
-        p.text = p.text.replace("{{nome_completo}}", nome_completo)
-        p.text = p.text.replace("{{luogo_nascita}}", luogo_nascita)
-        p.text = p.text.replace("{{data_nascita}}", data_nascita)
-        p.text = p.text.replace("{{cf}}", cf)
-        p.text = p.text.replace("{{comune_residenza}}", comune_residenza)
-        p.text = p.text.replace("{{via}}", via)
-        p.text = p.text.replace("{{telefono}}", telefono)
-        p.text = p.text.replace("{{email}}", email)
-        p.text = p.text.replace("{{metodo_pagamento}}", metodo_pagamento)
-        p.text = p.text.replace("{{num_lampade}}", num_lampade)
-        p.text = p.text.replace("{{elenco_defunti}}", elenco_defunti)
+        p.text = p.text.replace("{{ID_CONTRATTO}}", str(id_contratto))
+        p.text = p.text.replace("{{NOME_COMPLETO}}", nome_completo)
+        p.text = p.text.replace("{{LUOGO_NASCITA}}", luogo_nascita)
+        p.text = p.text.replace("{{DATA_NASCITA}}", data_nascita)
+        p.text = p.text.replace("{{CF}}", cf)
+        p.text = p.text.replace("{{COMUNE_RESIDENZA}}", comune_residenza)
+        p.text = p.text.replace("{{VIA}}", via)
+        p.text = p.text.replace("{{TELEFONO}}", telefono)
+        p.text = p.text.replace("{{EMAIL}}", email)
+        p.text = p.text.replace("{{METODO_PAGAMENTO}}", metodo_pagamento)
+        p.text = p.text.replace("{{NUM_LAMPADE}}", num_lampade)
+        p.text = p.text.replace("{{ELENCO_DEFUNTI}}", elenco_defunti)
+        p.text = p.text.replace("{{DATA_CONTRATTO}}", data_contratto)
 
     # Salva contratto
     doc.save(output_path)
